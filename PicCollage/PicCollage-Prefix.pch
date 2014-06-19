@@ -13,4 +13,8 @@
 #ifdef __OBJC__
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
+	#import "AppDelegate.h"
+	#import "Macros.h"
+
+#define PREF_SAVEIMAGE_ARRAY		@"saveImage_Arry"
 #endif

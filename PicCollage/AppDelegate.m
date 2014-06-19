@@ -7,12 +7,29 @@
 //
 
 #import "AppDelegate.h"
+#import "ScrollCollageViewController.h"
 
 @implementation AppDelegate
+
+@synthesize mArrSavedImageName;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	
+	mArrSavedImageName=[[NSMutableArray alloc] initWithCapacity:10];
+	
+	
+	NSData *data2 = [[NSUserDefaults standardUserDefaults] objectForKey:PREF_SAVEIMAGE_ARRAY];
+    mArrSavedImageName = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData:data2];
+	
+	ScrollCollageViewController *scrollCollageViewController=[[ScrollCollageViewController alloc] init];
+	
+	UINavigationController *navi=[[UINavigationController alloc] initWithRootViewController:scrollCollageViewController];
+	
+	navi.navigationBarHidden=TRUE;
+	
+	self.window.rootViewController=navi;
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
@@ -44,6 +61,69 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
 	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+#pragma -
+#pragma Saving/Loading/removing Images from documents directory
+
+//saving an image
+
+- (void)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex
+{
+	if (mArrSavedImageName==nil) {
+		mArrSavedImageName=[[NSMutableArray alloc] initWithCapacity:10];
+	}
+    NSDate*date = [NSDate date];
+    NSString *imagePath;
+    NSData *imageDate;
+    
+    NSTimeInterval timeInterval = [date timeIntervalSince1970];
+    //NSLog(@"\n time = %f",timeInterval);
+    NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    if (isEdit) {
+        NSString *Time=[mArrSavedImageName objectAtIndex:arrayIndex];
+        NSLog(@"Time-----%@",Time);
+        imagePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png",Time]];
+        NSLog(@"ImagePath-----%@",imagePath);
+        imageDate = [NSData dataWithData:UIImagePNGRepresentation(image)];
+    }
+    else
+    {
+        imagePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%f.png",timeInterval]];
+        imageDate = [NSData dataWithData:UIImagePNGRepresentation(image)];
+    }
+    
+    if(imageDate)
+    {
+        [imageDate writeToFile: imagePath atomically: YES];
+        if([mArrSavedImageName count]>1)
+        {
+            if(isEdit == NO)
+            {
+                [mArrSavedImageName insertObject:[NSString stringWithFormat:@"%f", timeInterval] atIndex:[mArrSavedImageName count]-1];
+            }
+        }
+        else if([mArrSavedImageName count]==0 || [mArrSavedImageName count]==1)
+        {
+			[mArrSavedImageName addObject:[NSString stringWithFormat:@"%f",timeInterval]];
+        }
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        
+        NSData *data1=[NSKeyedArchiver archivedDataWithRootObject:mArrSavedImageName];
+        [defaults setObject:data1 forKey:PREF_SAVEIMAGE_ARRAY];
+		[defaults synchronize];
+		
+    }
+}
+
+-(void)Deleteimage:(int)imageName
+{
+    NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *imagePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%d.png",imageName]];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    [fileManager removeItemAtPath:imagePath error:NULL];
 }
 
 @end

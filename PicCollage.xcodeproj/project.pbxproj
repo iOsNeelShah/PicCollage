@@ -19,6 +19,16 @@
 		39A89C0D1951ABF300A41FE4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39A89BF51951ABF200A41FE4 /* UIKit.framework */; };
 		39A89C151951ABF300A41FE4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 39A89C131951ABF300A41FE4 /* InfoPlist.strings */; };
 		39A89C171951ABF300A41FE4 /* PicCollageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A89C161951ABF300A41FE4 /* PicCollageTests.m */; };
+		39DF5A73195305AC00C6C32F /* ScrollCollageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A71195305AC00C6C32F /* ScrollCollageViewController.m */; };
+		39DF5A74195305AC00C6C32F /* ScrollCollageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 39DF5A72195305AC00C6C32F /* ScrollCollageViewController.xib */; };
+		39DF5A7819530A4600C6C32F /* MakeCollageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A7619530A4600C6C32F /* MakeCollageViewController.m */; };
+		39DF5A7919530A4600C6C32F /* MakeCollageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 39DF5A7719530A4600C6C32F /* MakeCollageViewController.xib */; };
+		39DF5A7C19530E5C00C6C32F /* ImagePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A7B19530E5C00C6C32F /* ImagePickerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		39DF5A7E19530E8600C6C32F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39DF5A7D19530E8600C6C32F /* MobileCoreServices.framework */; };
+		39DF5A88195314E500C6C32F /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A81195314E500C6C32F /* UIImage+Alpha.m */; };
+		39DF5A89195314E500C6C32F /* UIImage+RawData.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A83195314E500C6C32F /* UIImage+RawData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		39DF5A8A195314E500C6C32F /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A85195314E500C6C32F /* UIImage+Resize.m */; };
+		39DF5A8B195314E500C6C32F /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 39DF5A87195314E500C6C32F /* UIImage+RoundedCorner.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +58,24 @@
 		39A89C121951ABF300A41FE4 /* PicCollageTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PicCollageTests-Info.plist"; sourceTree = "<group>"; };
 		39A89C141951ABF300A41FE4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		39A89C161951ABF300A41FE4 /* PicCollageTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PicCollageTests.m; sourceTree = "<group>"; };
+		39DF5A6E1952F5BB00C6C32F /* Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
+		39DF5A70195305AC00C6C32F /* ScrollCollageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollCollageViewController.h; sourceTree = "<group>"; };
+		39DF5A71195305AC00C6C32F /* ScrollCollageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollCollageViewController.m; sourceTree = "<group>"; };
+		39DF5A72195305AC00C6C32F /* ScrollCollageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ScrollCollageViewController.xib; sourceTree = "<group>"; };
+		39DF5A7519530A4600C6C32F /* MakeCollageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MakeCollageViewController.h; sourceTree = "<group>"; };
+		39DF5A7619530A4600C6C32F /* MakeCollageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MakeCollageViewController.m; sourceTree = "<group>"; };
+		39DF5A7719530A4600C6C32F /* MakeCollageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MakeCollageViewController.xib; sourceTree = "<group>"; };
+		39DF5A7A19530E5C00C6C32F /* ImagePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePickerView.h; sourceTree = "<group>"; };
+		39DF5A7B19530E5C00C6C32F /* ImagePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePickerView.m; sourceTree = "<group>"; };
+		39DF5A7D19530E8600C6C32F /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		39DF5A80195314E500C6C32F /* UIImage+Alpha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Alpha.h"; sourceTree = "<group>"; };
+		39DF5A81195314E500C6C32F /* UIImage+Alpha.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Alpha.m"; sourceTree = "<group>"; };
+		39DF5A82195314E500C6C32F /* UIImage+RawData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RawData.h"; sourceTree = "<group>"; };
+		39DF5A83195314E500C6C32F /* UIImage+RawData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RawData.m"; sourceTree = "<group>"; };
+		39DF5A84195314E500C6C32F /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
+		39DF5A85195314E500C6C32F /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
+		39DF5A86195314E500C6C32F /* UIImage+RoundedCorner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RoundedCorner.h"; sourceTree = "<group>"; };
+		39DF5A87195314E500C6C32F /* UIImage+RoundedCorner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RoundedCorner.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39DF5A7E19530E8600C6C32F /* MobileCoreServices.framework in Frameworks */,
 				39A89BF41951ABF200A41FE4 /* CoreGraphics.framework in Frameworks */,
 				39A89BF61951ABF200A41FE4 /* UIKit.framework in Frameworks */,
 				39A89BF21951ABF200A41FE4 /* Foundation.framework in Frameworks */,
@@ -96,6 +125,7 @@
 		39A89BF01951ABF200A41FE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				39DF5A7D19530E8600C6C32F /* MobileCoreServices.framework */,
 				39A89BF11951ABF200A41FE4 /* Foundation.framework */,
 				39A89BF31951ABF200A41FE4 /* CoreGraphics.framework */,
 				39A89BF51951ABF200A41FE4 /* UIKit.framework */,
@@ -107,8 +137,10 @@
 		39A89BF71951ABF200A41FE4 /* PicCollage */ = {
 			isa = PBXGroup;
 			children = (
+				39DF5A6D1952F5BB00C6C32F /* Helper */,
 				39A89C001951ABF200A41FE4 /* AppDelegate.h */,
 				39A89C011951ABF200A41FE4 /* AppDelegate.m */,
+				39DF5A6F1953056600C6C32F /* Screen */,
 				39A89C031951ABF200A41FE4 /* Images.xcassets */,
 				39A89BF81951ABF200A41FE4 /* Supporting Files */,
 			);
@@ -142,6 +174,45 @@
 				39A89C131951ABF300A41FE4 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		39DF5A6D1952F5BB00C6C32F /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				39DF5A7A19530E5C00C6C32F /* ImagePickerView.h */,
+				39DF5A7B19530E5C00C6C32F /* ImagePickerView.m */,
+				39DF5A6E1952F5BB00C6C32F /* Macros.h */,
+				39DF5A7F195314E500C6C32F /* ImageResize */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		39DF5A6F1953056600C6C32F /* Screen */ = {
+			isa = PBXGroup;
+			children = (
+				39DF5A70195305AC00C6C32F /* ScrollCollageViewController.h */,
+				39DF5A71195305AC00C6C32F /* ScrollCollageViewController.m */,
+				39DF5A72195305AC00C6C32F /* ScrollCollageViewController.xib */,
+				39DF5A7519530A4600C6C32F /* MakeCollageViewController.h */,
+				39DF5A7619530A4600C6C32F /* MakeCollageViewController.m */,
+				39DF5A7719530A4600C6C32F /* MakeCollageViewController.xib */,
+			);
+			path = Screen;
+			sourceTree = "<group>";
+		};
+		39DF5A7F195314E500C6C32F /* ImageResize */ = {
+			isa = PBXGroup;
+			children = (
+				39DF5A80195314E500C6C32F /* UIImage+Alpha.h */,
+				39DF5A81195314E500C6C32F /* UIImage+Alpha.m */,
+				39DF5A82195314E500C6C32F /* UIImage+RawData.h */,
+				39DF5A83195314E500C6C32F /* UIImage+RawData.m */,
+				39DF5A84195314E500C6C32F /* UIImage+Resize.h */,
+				39DF5A85195314E500C6C32F /* UIImage+Resize.m */,
+				39DF5A86195314E500C6C32F /* UIImage+RoundedCorner.h */,
+				39DF5A87195314E500C6C32F /* UIImage+RoundedCorner.m */,
+			);
+			path = ImageResize;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,6 +292,8 @@
 			files = (
 				39A89BFC1951ABF200A41FE4 /* InfoPlist.strings in Resources */,
 				39A89C041951ABF200A41FE4 /* Images.xcassets in Resources */,
+				39DF5A7919530A4600C6C32F /* MakeCollageViewController.xib in Resources */,
+				39DF5A74195305AC00C6C32F /* ScrollCollageViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,7 +312,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39DF5A89195314E500C6C32F /* UIImage+RawData.m in Sources */,
+				39DF5A8B195314E500C6C32F /* UIImage+RoundedCorner.m in Sources */,
+				39DF5A8A195314E500C6C32F /* UIImage+Resize.m in Sources */,
 				39A89C021951ABF200A41FE4 /* AppDelegate.m in Sources */,
+				39DF5A7C19530E5C00C6C32F /* ImagePickerView.m in Sources */,
+				39DF5A88195314E500C6C32F /* UIImage+Alpha.m in Sources */,
+				39DF5A73195305AC00C6C32F /* ScrollCollageViewController.m in Sources */,
+				39DF5A7819530A4600C6C32F /* MakeCollageViewController.m in Sources */,
 				39A89BFE1951ABF200A41FE4 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -360,6 +440,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicCollage/PicCollage-Prefix.pch";
 				INFOPLIST_FILE = "PicCollage/PicCollage-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -373,6 +454,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PicCollage/PicCollage-Prefix.pch";
 				INFOPLIST_FILE = "PicCollage/PicCollage-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -437,6 +519,7 @@
 				39A89C1C1951ABF300A41FE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		39A89C1D1951ABF300A41FE4 /* Build configuration list for PBXNativeTarget "PicCollageTests" */ = {
 			isa = XCConfigurationList;
@@ -445,6 +528,7 @@
 				39A89C1F1951ABF300A41FE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

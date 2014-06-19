@@ -12,4 +12,8 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+@property (nonatomic,retain)NSMutableArray *mArrSavedImageName;
+
+- (void)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex;
+
 @end
