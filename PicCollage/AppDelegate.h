@@ -14,6 +14,6 @@
 
 @property (nonatomic,retain)NSMutableArray *mArrSavedImageName;
 
-- (void)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex;
+- (NSTimeInterval)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex;
 
 @end

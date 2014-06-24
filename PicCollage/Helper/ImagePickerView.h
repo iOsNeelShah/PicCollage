@@ -28,7 +28,7 @@ PickerControllerType;
 }
 
 @property (nonatomic, assign) PickerControllerType type;
-@property(nonatomic,copy)void (^onImageSelect)(UIImage * imgSelected);
+@property(nonatomic,copy)void (^onImageSelect)(UIImage * imgSelected,NSDictionary *dicInfo);
 
 -(void)OpenActionSheet:(UIViewController *)ViewCont BtniPadPopOverFrame:(UIButton *)BtnTemp;
 

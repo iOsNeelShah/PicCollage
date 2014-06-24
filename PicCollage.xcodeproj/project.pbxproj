@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		391393FC19581D0F0000E675 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 391393FB19581D0F0000E675 /* AssetsLibrary.framework */; };
 		39A89BF21951ABF200A41FE4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39A89BF11951ABF200A41FE4 /* Foundation.framework */; };
 		39A89BF41951ABF200A41FE4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39A89BF31951ABF200A41FE4 /* CoreGraphics.framework */; };
 		39A89BF61951ABF200A41FE4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39A89BF51951ABF200A41FE4 /* UIKit.framework */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		391393FB19581D0F0000E675 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		39A89BEE1951ABF200A41FE4 /* PicCollage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PicCollage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39A89BF11951ABF200A41FE4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		39A89BF31951ABF200A41FE4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -83,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				391393FC19581D0F0000E675 /* AssetsLibrary.framework in Frameworks */,
 				39DF5A7E19530E8600C6C32F /* MobileCoreServices.framework in Frameworks */,
 				39A89BF41951ABF200A41FE4 /* CoreGraphics.framework in Frameworks */,
 				39A89BF61951ABF200A41FE4 /* UIKit.framework in Frameworks */,
@@ -125,6 +128,7 @@
 		39A89BF01951ABF200A41FE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				391393FB19581D0F0000E675 /* AssetsLibrary.framework */,
 				39DF5A7D19530E8600C6C32F /* MobileCoreServices.framework */,
 				39A89BF11951ABF200A41FE4 /* Foundation.framework */,
 				39A89BF31951ABF200A41FE4 /* CoreGraphics.framework */,

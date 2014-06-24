@@ -226,7 +226,7 @@ Open ActionSheet Related to Selected Type.
         }
     }
     [imgPicker retain];
-    self.onImageSelect(imgPicker);
+    self.onImageSelect(nil,info);
     [self dismissViewControllerAnimated:YES completion:nil];
     [popOverForIpad dismissPopoverAnimated:YES];
 }

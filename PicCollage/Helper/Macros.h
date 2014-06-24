@@ -14,6 +14,8 @@
 
 #define IS_RATINA  ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 
+#define DOCUMENTS_PATH [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+
 #define IS_I5  (fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON)
 
 #define IOS_5_PLUS	([[[UIDevice currentDevice] systemVersion] floatValue]  >= 5.0 )

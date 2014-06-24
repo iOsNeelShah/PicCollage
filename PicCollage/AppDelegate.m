@@ -68,7 +68,7 @@
 
 //saving an image
 
-- (void)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex
+- (NSTimeInterval)saveImage:(UIImage*)image isEdit:(BOOL)isEdit index:(int)arrayIndex
 {
 	if (mArrSavedImageName==nil) {
 		mArrSavedImageName=[[NSMutableArray alloc] initWithCapacity:10];
@@ -77,44 +77,40 @@
     NSString *imagePath;
     NSData *imageDate;
     
-    NSTimeInterval timeInterval = [date timeIntervalSince1970];
+    NSTimeInterval timeInterval;
     //NSLog(@"\n time = %f",timeInterval);
-    NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+	
     if (isEdit) {
-        NSString *Time=[mArrSavedImageName objectAtIndex:arrayIndex];
-        NSLog(@"Time-----%@",Time);
-        imagePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png",Time]];
+        imagePath = [DOCUMENTS_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png",[mArrSavedImageName objectAtIndex:arrayIndex]]];
         NSLog(@"ImagePath-----%@",imagePath);
+		timeInterval = [[mArrSavedImageName objectAtIndex:arrayIndex] doubleValue];
         imageDate = [NSData dataWithData:UIImagePNGRepresentation(image)];
+		
     }
     else
     {
-        imagePath = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"%f.png",timeInterval]];
+		timeInterval = [date timeIntervalSince1970];
+        imagePath = [DOCUMENTS_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"%f.png",timeInterval]];
         imageDate = [NSData dataWithData:UIImagePNGRepresentation(image)];
     }
     
     if(imageDate)
     {
         [imageDate writeToFile: imagePath atomically: YES];
-        if([mArrSavedImageName count]>1)
-        {
-            if(isEdit == NO)
-            {
-                [mArrSavedImageName insertObject:[NSString stringWithFormat:@"%f", timeInterval] atIndex:[mArrSavedImageName count]-1];
-            }
-        }
-        else if([mArrSavedImageName count]==0 || [mArrSavedImageName count]==1)
-        {
-			[mArrSavedImageName addObject:[NSString stringWithFormat:@"%f",timeInterval]];
-        }
+        
+		if(isEdit == NO)
+		{
+			[mArrSavedImageName addObject:[NSString stringWithFormat:@"%f", timeInterval]];
+		}
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         NSData *data1=[NSKeyedArchiver archivedDataWithRootObject:mArrSavedImageName];
         [defaults setObject:data1 forKey:PREF_SAVEIMAGE_ARRAY];
 		[defaults synchronize];
-		
     }
+	
+	return timeInterval;
 }
 
 -(void)Deleteimage:(int)imageName

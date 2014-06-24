@@ -9,6 +9,8 @@
 #import "MakeCollageViewController.h"
 #import "ImagePickerView.h"
 #import "UIImage+Resize.h"
+#import <AVFoundation/AVFoundation.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 
 @interface UIImage (NSCoding)
@@ -36,6 +38,8 @@
 
 @synthesize imagePickerView;
 
+@synthesize isEdit,sPlistName,iIndex;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -62,6 +66,106 @@
 	self.view.transform = CGAffineTransformMakeScale(1,1);
 	[UIView commitAnimations];
 	
+	
+	mArrPlistData=[[NSMutableArray alloc] init];
+	iIndexValue=20000;
+	
+	if (isEdit) {
+		NSArray *sysPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory ,NSUserDomainMask, YES);
+		
+		NSString *documentsDirectory = [sysPaths objectAtIndex:0];
+		
+		NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",sPlistName]];
+		
+		NSLog(@"Plist File Path: %@", filePath);
+		
+		// Step2: Define mutable dictionary
+		
+		NSMutableDictionary *plistDict;
+		
+		// Step3: Check if file exists at path and read data from the file if exists
+		
+		if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+		{
+			plistDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+		}
+		NSLog(@"plistDict==%@",[plistDict description]);
+		
+		mArrPlistData=[NSMutableArray arrayWithArray:[plistDict objectForKey:@"scraps"]];
+		
+		for (int i=0; i<[mArrPlistData count]; i++) {
+			NSURL *referenceURL =[NSURL URLWithString:[[[mArrPlistData objectAtIndex:i] objectForKey:@"image"] objectForKey:@"source_url"]];
+			ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+			[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
+				
+				UIImageView *imgView=[[UIImageView alloc] initWithImage:[[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]] resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(500,500) interpolationQuality:kCGInterpolationDefault]];
+				
+				imgView.contentMode = UIViewContentModeScaleAspectFit;
+				
+//				imgView.backgroundColor=[UIColor redColor];
+				
+				NSDictionary *dicTransform=[[mArrPlistData objectAtIndex:i] objectForKey:@"transform"];
+				
+				CGAffineTransform transform = CGAffineTransformMake([[dicTransform objectForKey:@"a"] doubleValue], [[dicTransform objectForKey:@"b"] doubleValue],[[dicTransform objectForKey:@"c"] doubleValue], [[dicTransform objectForKey:@"d"] doubleValue], 0, 0);
+				
+				imgView.transform = transform;
+				
+				imgView.userInteractionEnabled=TRUE;
+				
+				NSDictionary *dicFrame=[[mArrPlistData objectAtIndex:i] objectForKey:@"frame"];
+				
+				imgView.frame=CGRectMake([[dicFrame objectForKey:@"x"] doubleValue], [[dicFrame objectForKey:@"y"] doubleValue], [[dicFrame objectForKey:@"base_width"] doubleValue], [[dicFrame objectForKey:@"base_height"] doubleValue]);
+				
+				imgView.center=CGPointMake([[dicFrame objectForKey:@"center_x"] doubleValue], [[dicFrame objectForKey:@"center_y"] doubleValue]);
+				
+				imgView.tag=iIndexValue;
+				
+				pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scale:)];
+				[pinchRecognizer setDelegate:self];
+				[imgView addGestureRecognizer:pinchRecognizer];
+				
+				rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(rotate:)];
+				[rotationRecognizer setDelegate:self];
+				[imgView addGestureRecognizer:rotationRecognizer];
+				
+				
+				panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
+				[panRecognizer setMinimumNumberOfTouches:1];
+				//[panRecognizer setMaximumNumberOfTouches:1];
+				[panRecognizer setDelegate:self];
+				[imgView addGestureRecognizer:panRecognizer];
+				
+				
+				tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
+				//[tapRecognizer setNumberOfTapsRequired:1];
+				tapRecognizer.numberOfTapsRequired = 1;
+				tapRecognizer.numberOfTouchesRequired = 1;
+				[tapRecognizer setDelegate:self];
+				[imgView addGestureRecognizer:tapRecognizer];
+
+				
+				[self.view addSubview:imgView];
+				
+				[self.view bringSubviewToFront:IBbtnGetImage];
+				[self.view bringSubviewToFront:IBbtnBack];
+				
+				
+				iIndexValue++;
+				
+			} failureBlock:^(NSError *error) {
+				
+			}];
+			
+			library=nil;
+
+		}
+	}
+	else
+	{
+		lastRotation=0.0;
+		lastScale=1.0;
+	}
+	
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -74,7 +178,59 @@
 	
 	UIImage *tempImage = [self captureScreenInRect:self.view.frame];
 	
-	[APP_DELEGATE saveImage:tempImage isEdit:FALSE index:0];
+	
+	NSTimeInterval time=[APP_DELEGATE saveImage:tempImage isEdit:isEdit index:iIndex];
+	
+	// Step1: Get plist file path
+	
+	NSArray *sysPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory ,NSUserDomainMask, YES);
+	
+	NSString *documentsDirectory = [sysPaths objectAtIndex:0];
+	
+	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%f.plist",time]];
+	
+	NSLog(@"Plist File Path: %@", filePath);
+	
+	// Step2: Define mutable dictionary
+	
+	NSMutableDictionary *plistDict;
+	
+	// Step3: Check if file exists at path and read data from the file if exists
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+	{
+		plistDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+	}
+	else
+	{
+		// Step4: If doesn't exist, start with an empty dictionary
+		plistDict = [[NSMutableDictionary alloc] init];
+	}
+	
+	NSLog(@"plist data: %@", [plistDict description]);
+	
+	// Step5: Set data in dictionary
+	
+	[plistDict setValue:mArrPlistData forKey: @"scraps"];
+	
+	// Step6: Write data from the mutable dictionary to the plist file
+	
+	BOOL didWriteToFile = [plistDict writeToFile:filePath atomically:YES];
+	
+	if (didWriteToFile)
+	{
+		NSLog(@"Write to .plist file is a SUCCESS!");
+	}
+	
+	else
+	{
+		NSLog(@"Write to .plist file is a FAILURE!");
+	}
+	
+	
+	for (UIView *view in self.view.subviews) {
+		[view removeFromSuperview];
+	}
 	
 	[self.navigationController popViewControllerAnimated:NO];
 	imagePickerView=nil;
@@ -84,9 +240,40 @@
 {
 	__block __weak ImagePickerView *imgPicker=imagePickerView;
 	[imgPicker OpenActionSheet:self BtniPadPopOverFrame:IBbtnGetImage];
-    imgPicker.onImageSelect=^(UIImage *imgSelected){
+    imgPicker.onImageSelect=^(UIImage *imgSelected,NSDictionary *dicInfo){
         //Work with Image Here
-        [self setImageInView:imgSelected];
+		NSLog(@"===%@",[dicInfo objectForKey:UIImagePickerControllerReferenceURL]);
+		NSURL *referenceURL = [dicInfo objectForKey:UIImagePickerControllerReferenceURL];
+		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+		[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
+			[self setImageInView:[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]]];
+			
+			UIImageView *img=(UIImageView *)[self.view viewWithTag:iIndexValue];
+			NSArray *arrDicValue=[self setFrameAndTransform:img];
+			
+			
+			NSDictionary *dicImageURL=[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@",[dicInfo objectForKey:UIImagePickerControllerReferenceURL]] forKey:@"source_url"];
+			
+			NSDictionary *dicValue=[NSDictionary dictionaryWithObjectsAndKeys:
+									[arrDicValue objectAtIndex:1],@"transform",
+									[arrDicValue objectAtIndex:0],@"frame",
+									dicImageURL,@"image",
+									nil];
+			
+			[mArrPlistData addObject:dicValue];
+			
+			dicValue=nil;
+			dicImageURL=nil;
+			arrDicValue=nil;
+			
+			NSLog(@"mArrPlistData===%@",mArrPlistData);
+			
+			iIndexValue++;
+			
+		} failureBlock:^(NSError *error) {
+			
+		}];
+		library=nil;
 		imgPicker=nil;
     };
 }
@@ -94,11 +281,43 @@
 
 #pragma mark - Private Methods
 
+- (CGFloat)xscale:(CGAffineTransform)transform {
+    return sqrt(transform.a * transform.a + transform.c * transform.c);
+}
+
+- (CGFloat)yscale:(CGAffineTransform)transform{
+    return sqrt(transform.b * transform.b + transform.d * transform.d);
+}
+
+-(NSArray *)setFrameAndTransform:(UIImageView *)imgView
+{
+	NSDictionary *dicTransform=[NSDictionary dictionaryWithObjectsAndKeys:
+								[NSNumber numberWithFloat:imgView.transform.a],@"a",
+								[NSNumber numberWithFloat:imgView.transform.b],@"b",
+								[NSNumber numberWithFloat:imgView.transform.c],@"c",
+								[NSNumber numberWithFloat:imgView.transform.d],@"d",
+								nil];
+	
+	NSDictionary *dicFrame=[NSDictionary dictionaryWithObjectsAndKeys:
+							[NSNumber numberWithFloat:imgView.center.x],@"center_x",
+							[NSNumber numberWithFloat:imgView.center.y],@"center_y",
+							[NSNumber numberWithFloat:imgView.frame.origin.x],@"x",
+							[NSNumber numberWithFloat:imgView.frame.origin.y],@"y",
+							[NSNumber numberWithFloat:imgView.frame.size.width],@"base_width",
+							[NSNumber numberWithFloat:imgView.frame.size.height],@"base_height",
+							nil];
+	
+	
+	return [NSArray arrayWithObjects:dicFrame,dicTransform, nil];
+}
+
 -(void)setImageInView:(UIImage *)image
 {
 	UIImageView *imageview;
 	imageview = [[UIImageView alloc] initWithFrame:CGRectMake(arc4random() % (320-250), arc4random() % (460-250), image.size.width/6, image.size.height/6)];
 	imageview.contentMode = UIViewContentModeScaleAspectFit;
+	
+	imageview.backgroundColor=[UIColor redColor];
 	
 	CALayer *layer1 = [imageview layer];
 	[layer1 setMasksToBounds:YES];
@@ -145,6 +364,8 @@
 	[imageview addGestureRecognizer:tapRecognizer];
 	
 	[self.view bringSubviewToFront:imageview];
+	
+	imageview.tag=iIndexValue;
 	[self.view addSubview:imageview];
 	
 	[self.view bringSubviewToFront:IBbtnGetImage];
@@ -181,6 +402,17 @@
     
 	if([(UIPinchGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
 		
+		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
+		
+		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
+		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
+		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
+		
+		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
+		
+		arrDicValue=nil;
+		mDic=nil;
+		
 		lastScale = 1.0;
 		return;
 	}
@@ -204,6 +436,17 @@
     
 	
 	if([(UIRotationGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
+		
+		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
+		
+		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
+		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
+		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
+		
+		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
+		
+		arrDicValue=nil;
+		mDic=nil;
 		
 		lastRotation = 0.0;
 		return;
@@ -234,6 +477,19 @@
 		
 		firstX = [[sender view] center].x;
 		firstY = [[sender view] center].y;
+	}
+	else if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded)
+	{
+		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
+		
+		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
+		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
+		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
+		
+		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
+		
+		arrDicValue=nil;
+		mDic=nil;
 	}
 	
 	translatedPoint = CGPointMake(firstX+translatedPoint.x, firstY+translatedPoint.y);

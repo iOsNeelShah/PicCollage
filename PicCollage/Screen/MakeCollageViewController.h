@@ -24,8 +24,16 @@
 	
 	CGFloat firstX;
 	CGFloat firstY;
+	
+	NSMutableArray *mArrPlistData;
+	
+	int iIndexValue;
 }
 
 @property (nonatomic, strong)ImagePickerView *imagePickerView;
+
+@property (nonatomic,readwrite)BOOL isEdit;
+@property (nonatomic,readwrite)int iIndex;
+@property (nonatomic,retain)NSString *sPlistName;
 
 @end
