@@ -98,25 +98,27 @@
 			ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
 			[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
 				
-				UIImageView *imgView=[[UIImageView alloc] initWithImage:[[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]] resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(500,500) interpolationQuality:kCGInterpolationDefault]];
+				
+				NSDictionary *dicFrame=[[mArrPlistData objectAtIndex:i] objectForKey:@"frame"];
+				NSDictionary *dicTransform=[[mArrPlistData objectAtIndex:i] objectForKey:@"transform"];
+				
+				UIImageView *imgView=[[UIImageView alloc] initWithFrame:CGRectMake([[dicFrame objectForKey:@"x"] doubleValue], [[dicFrame objectForKey:@"y"] doubleValue], [[dicFrame objectForKey:@"base_width"] doubleValue], [[dicFrame objectForKey:@"base_height"] doubleValue])];
+				
+				imgView.center=CGPointMake([[dicFrame objectForKey:@"center_x"] doubleValue], [[dicFrame objectForKey:@"center_y"] doubleValue]);
+				
+				imgView.image=[[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]] resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(500,500) interpolationQuality:kCGInterpolationDefault];
 				
 				imgView.contentMode = UIViewContentModeScaleAspectFit;
 				
-//				imgView.backgroundColor=[UIColor redColor];
-				
-				NSDictionary *dicTransform=[[mArrPlistData objectAtIndex:i] objectForKey:@"transform"];
-				
 				CGAffineTransform transform = CGAffineTransformMake([[dicTransform objectForKey:@"a"] doubleValue], [[dicTransform objectForKey:@"b"] doubleValue],[[dicTransform objectForKey:@"c"] doubleValue], [[dicTransform objectForKey:@"d"] doubleValue], 0, 0);
+				
+//				float scale = sqrt(transform.a*transform.a + transform.d*transform.d);
 				
 				imgView.transform = transform;
 				
+//				imgView.transform = CGAffineTransformScale(transform, scale,  scale);
+				
 				imgView.userInteractionEnabled=TRUE;
-				
-				NSDictionary *dicFrame=[[mArrPlistData objectAtIndex:i] objectForKey:@"frame"];
-				
-				imgView.frame=CGRectMake([[dicFrame objectForKey:@"x"] doubleValue], [[dicFrame objectForKey:@"y"] doubleValue], [[dicFrame objectForKey:@"base_width"] doubleValue], [[dicFrame objectForKey:@"base_height"] doubleValue]);
-				
-				imgView.center=CGPointMake([[dicFrame objectForKey:@"center_x"] doubleValue], [[dicFrame objectForKey:@"center_y"] doubleValue]);
 				
 				imgView.tag=iIndexValue;
 				
