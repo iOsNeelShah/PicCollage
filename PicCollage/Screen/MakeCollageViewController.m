@@ -106,17 +106,22 @@
 				
 				imgView.center=CGPointMake([[dicFrame objectForKey:@"center_x"] doubleValue], [[dicFrame objectForKey:@"center_y"] doubleValue]);
 				
+				imgView.transform = CGAffineTransformMakeRotation(0);
+				
 				imgView.image=[[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]] resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(500,500) interpolationQuality:kCGInterpolationDefault];
 				
 				imgView.contentMode = UIViewContentModeScaleAspectFit;
 				
 				CGAffineTransform transform = CGAffineTransformMake([[dicTransform objectForKey:@"a"] doubleValue], [[dicTransform objectForKey:@"b"] doubleValue],[[dicTransform objectForKey:@"c"] doubleValue], [[dicTransform objectForKey:@"d"] doubleValue], 0, 0);
 				
-//				float scale = sqrt(transform.a*transform.a + transform.d*transform.d);
+				float rotation = atan2(transform.b, transform.a);
 				
-				imgView.transform = transform;
+				imgView.transform = CGAffineTransformMakeRotation(rotation);
 				
-//				imgView.transform = CGAffineTransformScale(transform, scale,  scale);
+				float sX = sqrt(transform.a * transform.a + transform.c * transform.c);
+				float sY = sqrt(transform.b * transform.b + transform.d * transform.d);
+				
+				imgView.transform = CGAffineTransformScale(imgView.transform, sX,  sY);
 				
 				imgView.userInteractionEnabled=TRUE;
 				
@@ -133,7 +138,6 @@
 				
 				panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
 				[panRecognizer setMinimumNumberOfTouches:1];
-				//[panRecognizer setMaximumNumberOfTouches:1];
 				[panRecognizer setDelegate:self];
 				[imgView addGestureRecognizer:panRecognizer];
 				
