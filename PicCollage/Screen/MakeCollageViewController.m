@@ -205,7 +205,7 @@
 	imageview = [[UIImageView alloc] initWithFrame:CGRectMake(arc4random() % (320-250), arc4random() % (460-250), image.size.width/6, image.size.height/6)];
 	imageview.contentMode = UIViewContentModeScaleAspectFit;
 	
-	imageview.backgroundColor=[UIColor redColor];
+	imageview.backgroundColor=[UIColor clearColor];
 	
 	CALayer *layer1 = [imageview layer];
 	[layer1 setMasksToBounds:YES];
