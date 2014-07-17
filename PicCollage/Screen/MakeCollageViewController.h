@@ -18,6 +18,7 @@
     UIRotationGestureRecognizer *rotationRecognizer;
     UIPanGestureRecognizer *panRecognizer;
     UITapGestureRecognizer *tapRecognizer;
+	UILongPressGestureRecognizer *longPressGesture;
 	
 	CGFloat lastScale;
 	CGFloat lastRotation;
@@ -26,6 +27,8 @@
 	CGFloat firstY;
 	
 	int iIndexValue;
+	
+	UIImageView *pieceForReset;
 }
 
 @property (nonatomic, strong)ImagePickerView *imagePickerView;

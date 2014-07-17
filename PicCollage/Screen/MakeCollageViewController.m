@@ -50,12 +50,6 @@
 	
 	iIndexValue=20000;
 	
-    // Do any additional setup after loading the view from its nib.
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-	[super viewWillAppear:animated];
 	if (isEdit)
 	{
 		self.view=nil;
@@ -78,12 +72,12 @@
 		}
 		//End
 		
-//		NSLog(@"APP_DELEGATE.mArrSavedView===%@",APP_DELEGATE.mArrSavedView);
+		//		NSLog(@"APP_DELEGATE.mArrSavedView===%@",APP_DELEGATE.mArrSavedView);
 		self.view = (UIView*)[APP_DELEGATE.mArrSavedView objectAtIndex:iIndex];
 		
 		for (UIView *view in [self.view subviews]) {
 			
-//			NSLog(@"\n [self.view subviews] = %@",view);
+			//			NSLog(@"\n [self.view subviews] = %@",view);
 			
 			if ([view isKindOfClass:[UIButton class]]) {
 				UIButton *btn=(UIButton *)view;
@@ -106,29 +100,9 @@
 			else if ([view isKindOfClass:[UIImageView class]])
 			{
 				
-				UIImageView *imgView=(UIImageView *)view;
+				UIImageView *imagView=(UIImageView *)view;
+				[self setGestureToImageView:imagView];
 				
-				pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scale:)];
-				[pinchRecognizer setDelegate:self];
-				[imgView addGestureRecognizer:pinchRecognizer];
-				
-				rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(rotate:)];
-				[rotationRecognizer setDelegate:self];
-				[imgView addGestureRecognizer:rotationRecognizer];
-				
-				
-				panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
-				[panRecognizer setMinimumNumberOfTouches:1];
-				[panRecognizer setDelegate:self];
-				[imgView addGestureRecognizer:panRecognizer];
-				
-				
-				tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
-				//[tapRecognizer setNumberOfTapsRequired:1];
-				tapRecognizer.numberOfTapsRequired = 1;
-				tapRecognizer.numberOfTouchesRequired = 1;
-				[tapRecognizer setDelegate:self];
-				[imgView addGestureRecognizer:tapRecognizer];
 			}
 		}
 	}
@@ -137,35 +111,63 @@
 		lastRotation=0.0;
 		lastScale=1.0;
 	}
+	
+    // Do any additional setup after loading the view from its nib.
 }
 
 #pragma mark - UIButton Action
 
 -(IBAction)btnBackSaveTap
 {
+	BOOL isImageThere=FALSE;
+	for (UIView *viewImage in self.view.subviews)
+	{
+		if ([viewImage isKindOfClass:[UIImageView class]])
+		{
+			isImageThere=TRUE;
+		}
+	}
+	
 	IBbtnBack.hidden=TRUE;
 	IBbtnGetImage.hidden=TRUE;
 	
 	UIImage *tempImage = [self captureScreenInRect:self.view.frame];
 	
-	[APP_DELEGATE saveImage:tempImage isEdit:isEdit index:iIndex];
+	if (isImageThere)
+	{
+		[APP_DELEGATE saveImage:tempImage isEdit:isEdit index:iIndex];
+	}
+	else if(isEdit)
+	{
+		NSString *imagePath = [DOCUMENTS_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png",[APP_DELEGATE.mArrSavedImageName objectAtIndex:iIndex]]];
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		[fileManager removeItemAtPath:imagePath error:NULL];
+		
+		[APP_DELEGATE.mArrSavedImageName removeObjectAtIndex:iIndex];
+	}
 	
 	
 	IBbtnBack.hidden=FALSE;
 	IBbtnGetImage.hidden=FALSE;
 	if(isEdit)
     {
-        [APP_DELEGATE.mArrSavedView replaceObjectAtIndex:iIndex withObject:self.view];
-		
+		if (isImageThere) {
+			[APP_DELEGATE.mArrSavedView replaceObjectAtIndex:iIndex withObject:self.view];
+		}
+        else
+		{
+			[APP_DELEGATE.mArrSavedView removeObjectAtIndex:iIndex];
+		}
     }
     else
     {
-		[APP_DELEGATE.mArrSavedView addObject:self.view];
+		if (isImageThere)
+		{
+			[APP_DELEGATE.mArrSavedView addObject:self.view];
+		}
     }
     
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-    
-    
     NSData *myEncodedObject = [NSKeyedArchiver archivedDataWithRootObject:APP_DELEGATE.mArrSavedView];
     [prefs setObject:myEncodedObject forKey:PREF_SAVEVIEW_ARRAY];
     [prefs synchronize];
@@ -199,6 +201,43 @@
 
 #pragma mark - Private Methods
 
+-(void)setGestureToImageView:(UIImageView *)imageview
+{
+	@autoreleasepool {
+		pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scale:)];
+		[pinchRecognizer setDelegate:self];
+		[imageview addGestureRecognizer:pinchRecognizer];
+		
+		rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(rotate:)];
+		[rotationRecognizer setDelegate:self];
+		[imageview addGestureRecognizer:rotationRecognizer];
+		
+		
+		panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
+		[panRecognizer setMinimumNumberOfTouches:1];
+		//[panRecognizer setMaximumNumberOfTouches:1];
+		[panRecognizer setDelegate:self];
+		[imageview addGestureRecognizer:panRecognizer];
+		
+		longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressed:)];
+		longPressGesture.minimumPressDuration = 0.5;
+		[imageview addGestureRecognizer:longPressGesture];
+		
+		
+		tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
+		tapRecognizer.numberOfTapsRequired = 1;
+		tapRecognizer.numberOfTouchesRequired = 1;
+		[tapRecognizer setDelegate:self];
+		[imageview addGestureRecognizer:tapRecognizer];
+		
+		pinchRecognizer=nil;
+		rotationRecognizer=nil;
+		panRecognizer=nil;
+		longPressGesture=nil;
+		tapRecognizer=nil;
+	}
+}
+
 -(void)setImageInView:(UIImage *)image
 {
 	UIImageView *imageview;
@@ -228,28 +267,7 @@
 	
 	[imageview setImage:image];
 	
-	pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scale:)];
-	[pinchRecognizer setDelegate:self];
-	[imageview addGestureRecognizer:pinchRecognizer];
-	
-	rotationRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(rotate:)];
-	[rotationRecognizer setDelegate:self];
-	[imageview addGestureRecognizer:rotationRecognizer];
-	
-	
-	panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
-	[panRecognizer setMinimumNumberOfTouches:1];
-	//[panRecognizer setMaximumNumberOfTouches:1];
-	[panRecognizer setDelegate:self];
-	[imageview addGestureRecognizer:panRecognizer];
-	
-	
-	tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
-	//[tapRecognizer setNumberOfTapsRequired:1];
-	tapRecognizer.numberOfTapsRequired = 1;
-	tapRecognizer.numberOfTouchesRequired = 1;
-	[tapRecognizer setDelegate:self];
-	[imageview addGestureRecognizer:tapRecognizer];
+	[self setGestureToImageView:imageview];
 	
 	[self.view bringSubviewToFront:imageview];
 	
@@ -279,6 +297,39 @@
         return NO;
     
 	return ![gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
+}
+
+
+-(void)longPressed:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer state] == UIGestureRecognizerStateBegan)
+    {
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        UIMenuItem *deleteMenuItem = [[UIMenuItem alloc] initWithTitle:@"Delete" action:@selector(deletePiece:)];
+        CGPoint location = [gestureRecognizer locationInView:[gestureRecognizer view]];
+        
+        [self becomeFirstResponder];
+        NSArray *arr = [[NSArray alloc]initWithObjects:deleteMenuItem, nil];
+		
+        [menuController setMenuItems:arr];
+        
+        [menuController setTargetRect:CGRectMake(location.x, location.y, 0, 0) inView:[gestureRecognizer view]];
+        [menuController setMenuVisible:YES animated:YES];
+        
+        pieceForReset = (UIImageView *)[gestureRecognizer view];
+		
+		deleteMenuItem=nil;
+    }
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)deletePiece:(UIMenuController *)controller
+{
+    [pieceForReset removeFromSuperview];
 }
 
 -(void)scale:(id)sender {
@@ -356,7 +407,6 @@
     [self.view bringSubviewToFront:IBbtnBack];
     
     [[[(UITapGestureRecognizer*)sender view] layer] removeAllAnimations];
-	
 }
 
 - (void)didReceiveMemoryWarning
