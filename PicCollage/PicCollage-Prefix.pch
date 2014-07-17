@@ -17,4 +17,6 @@
 	#import "Macros.h"
 
 #define PREF_SAVEIMAGE_ARRAY		@"saveImage_Arry"
+#define PREF_SAVEVIEW_ARRAY			@"saveView_Arry"
+
 #endif

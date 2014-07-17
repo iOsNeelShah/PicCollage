@@ -121,7 +121,6 @@
 	@autoreleasepool {
 		MakeCollageViewController *makeCollageViewController=[[MakeCollageViewController alloc] init];
 		makeCollageViewController.isEdit=TRUE;
-		makeCollageViewController.sPlistName=[APP_DELEGATE.mArrSavedImageName objectAtIndex:sender.tag];
 		makeCollageViewController.iIndex=sender.tag;
 		[self.navigationController pushViewController:makeCollageViewController animated:YES];
 	}

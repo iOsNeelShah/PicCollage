@@ -12,16 +12,33 @@
 @implementation AppDelegate
 
 @synthesize mArrSavedImageName;
+@synthesize mArrSavedView;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
+	//Get Image Name
 	mArrSavedImageName=[[NSMutableArray alloc] initWithCapacity:10];
-	
 	
 	NSData *data2 = [[NSUserDefaults standardUserDefaults] objectForKey:PREF_SAVEIMAGE_ARRAY];
     mArrSavedImageName = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData:data2];
+	//End
+	
+	//Get View
+	
+//	//Changes
+//    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+//    NSData *myEncodedObject = [prefs objectForKey:PREF_SAVEVIEW_ARRAY];
+//    
+//    NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:10];
+//    tmpArray = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
+//    mArrSavedView = [[NSMutableArray alloc] init];
+//    if([tmpArray count]>0)
+//    {
+//        mArrSavedView = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];;
+//    }
+//    //End
 	
 	ScrollCollageViewController *scrollCollageViewController=[[ScrollCollageViewController alloc] init];
 	

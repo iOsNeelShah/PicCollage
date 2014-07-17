@@ -12,24 +12,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-
-@interface UIImage (NSCoding)
-- (id)initWithCoderImage:(NSCoder *)decoder;
-- (void)encodeWithCoderImage:(NSCoder *)encoder;
-@end
-
-@implementation UIImage (NSCoding)
-- (id)initWithCoderImage:(NSCoder *)decoder {
-    NSData *pngData = [decoder decodeObjectForKey:@"PNGRepresentation"];
-    self = [[UIImage alloc] initWithData:pngData];
-    return self;
-}
-- (void)encodeWithCoderImage:(NSCoder *)encoder {
-    [encoder encodeObject:UIImageJPEGRepresentation(self,0) forKey:@"PNGRepresentation"];
-}
-@end
-
-
 @interface MakeCollageViewController ()
 
 @end
@@ -38,7 +20,7 @@
 
 @synthesize imagePickerView;
 
-@synthesize isEdit,sPlistName,iIndex;
+@synthesize isEdit,iIndex;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -66,66 +48,65 @@
 	self.view.transform = CGAffineTransformMakeScale(1,1);
 	[UIView commitAnimations];
 	
-	
-	mArrPlistData=[[NSMutableArray alloc] init];
 	iIndexValue=20000;
 	
-	if (isEdit) {
-		NSArray *sysPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory ,NSUserDomainMask, YES);
+    // Do any additional setup after loading the view from its nib.
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	if (isEdit)
+	{
+		self.view=nil;
 		
-		NSString *documentsDirectory = [sysPaths objectAtIndex:0];
+		//Changes
+		NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+		NSData *myEncodedObject = [prefs objectForKey:PREF_SAVEVIEW_ARRAY];
 		
-		NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",sPlistName]];
+		NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:10];
+		tmpArray = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
 		
-		NSLog(@"Plist File Path: %@", filePath);
-		
-		// Step2: Define mutable dictionary
-		
-		NSMutableDictionary *plistDict;
-		
-		// Step3: Check if file exists at path and read data from the file if exists
-		
-		if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+		if (APP_DELEGATE.mArrSavedView==nil)
 		{
-			plistDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+			APP_DELEGATE.mArrSavedView = [[NSMutableArray alloc] init];
 		}
-		NSLog(@"plistDict==%@",[plistDict description]);
 		
-		mArrPlistData=[NSMutableArray arrayWithArray:[plistDict objectForKey:@"scraps"]];
+		if([tmpArray count]>0)
+		{
+			APP_DELEGATE.mArrSavedView = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];;
+		}
+		//End
 		
-		for (int i=0; i<[mArrPlistData count]; i++) {
-			NSURL *referenceURL =[NSURL URLWithString:[[[mArrPlistData objectAtIndex:i] objectForKey:@"image"] objectForKey:@"source_url"]];
-			ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-			[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
+//		NSLog(@"APP_DELEGATE.mArrSavedView===%@",APP_DELEGATE.mArrSavedView);
+		self.view = (UIView*)[APP_DELEGATE.mArrSavedView objectAtIndex:iIndex];
+		
+		for (UIView *view in [self.view subviews]) {
+			
+//			NSLog(@"\n [self.view subviews] = %@",view);
+			
+			if ([view isKindOfClass:[UIButton class]]) {
+				UIButton *btn=(UIButton *)view;
+				btn.hidden=FALSE;
 				
+				if (btn.tag==1000)
+				{
+					[btn addTarget:self action:@selector(btnOpenAction) forControlEvents:UIControlEventTouchUpInside];
+					IBbtnGetImage=btn;
+					
+				}
+				else if(btn.tag==2000)
+				{
+					[btn addTarget:self action:@selector(btnBackSaveTap) forControlEvents:UIControlEventTouchUpInside];
+					IBbtnBack=btn;
+					IBbtnBack.highlighted=FALSE;
+					[IBbtnBack setImage:[UIImage imageNamed:@"home.png"] forState:UIControlStateNormal];
+				}
+			}
+			else if ([view isKindOfClass:[UIImageView class]])
+			{
 				
-				NSDictionary *dicFrame=[[mArrPlistData objectAtIndex:i] objectForKey:@"frame"];
-				NSDictionary *dicTransform=[[mArrPlistData objectAtIndex:i] objectForKey:@"transform"];
-				
-				UIImageView *imgView=[[UIImageView alloc] initWithFrame:CGRectMake([[dicFrame objectForKey:@"x"] doubleValue], [[dicFrame objectForKey:@"y"] doubleValue], [[dicFrame objectForKey:@"base_width"] doubleValue], [[dicFrame objectForKey:@"base_height"] doubleValue])];
-				
-				imgView.center=CGPointMake([[dicFrame objectForKey:@"center_x"] doubleValue], [[dicFrame objectForKey:@"center_y"] doubleValue]);
-				
-				imgView.transform = CGAffineTransformMakeRotation(0);
-				
-				imgView.image=[[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]] resizedImageWithContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(500,500) interpolationQuality:kCGInterpolationDefault];
-				
-				imgView.contentMode = UIViewContentModeScaleAspectFit;
-				
-				CGAffineTransform transform = CGAffineTransformMake([[dicTransform objectForKey:@"a"] doubleValue], [[dicTransform objectForKey:@"b"] doubleValue],[[dicTransform objectForKey:@"c"] doubleValue], [[dicTransform objectForKey:@"d"] doubleValue], 0, 0);
-				
-				float rotation = atan2(transform.b, transform.a);
-				
-				imgView.transform = CGAffineTransformMakeRotation(rotation);
-				
-				float sX = sqrt(transform.a * transform.a + transform.c * transform.c);
-				float sY = sqrt(transform.b * transform.b + transform.d * transform.d);
-				
-				imgView.transform = CGAffineTransformScale(imgView.transform, sX,  sY);
-				
-				imgView.userInteractionEnabled=TRUE;
-				
-				imgView.tag=iIndexValue;
+				UIImageView *imgView=(UIImageView *)view;
 				
 				pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scale:)];
 				[pinchRecognizer setDelegate:self];
@@ -148,22 +129,7 @@
 				tapRecognizer.numberOfTouchesRequired = 1;
 				[tapRecognizer setDelegate:self];
 				[imgView addGestureRecognizer:tapRecognizer];
-
-				
-				[self.view addSubview:imgView];
-				
-				[self.view bringSubviewToFront:IBbtnGetImage];
-				[self.view bringSubviewToFront:IBbtnBack];
-				
-				
-				iIndexValue++;
-				
-			} failureBlock:^(NSError *error) {
-				
-			}];
-			
-			library=nil;
-
+			}
 		}
 	}
 	else
@@ -171,8 +137,6 @@
 		lastRotation=0.0;
 		lastScale=1.0;
 	}
-	
-    // Do any additional setup after loading the view from its nib.
 }
 
 #pragma mark - UIButton Action
@@ -184,55 +148,27 @@
 	
 	UIImage *tempImage = [self captureScreenInRect:self.view.frame];
 	
+	[APP_DELEGATE saveImage:tempImage isEdit:isEdit index:iIndex];
 	
-	NSTimeInterval time=[APP_DELEGATE saveImage:tempImage isEdit:isEdit index:iIndex];
 	
-	// Step1: Get plist file path
-	
-	NSArray *sysPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory ,NSUserDomainMask, YES);
-	
-	NSString *documentsDirectory = [sysPaths objectAtIndex:0];
-	
-	NSString *filePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%f.plist",time]];
-	
-	NSLog(@"Plist File Path: %@", filePath);
-	
-	// Step2: Define mutable dictionary
-	
-	NSMutableDictionary *plistDict;
-	
-	// Step3: Check if file exists at path and read data from the file if exists
-	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
-	{
-		plistDict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
-	}
-	else
-	{
-		// Step4: If doesn't exist, start with an empty dictionary
-		plistDict = [[NSMutableDictionary alloc] init];
-	}
-	
-	NSLog(@"plist data: %@", [plistDict description]);
-	
-	// Step5: Set data in dictionary
-	
-	[plistDict setValue:mArrPlistData forKey: @"scraps"];
-	
-	// Step6: Write data from the mutable dictionary to the plist file
-	
-	BOOL didWriteToFile = [plistDict writeToFile:filePath atomically:YES];
-	
-	if (didWriteToFile)
-	{
-		NSLog(@"Write to .plist file is a SUCCESS!");
-	}
-	
-	else
-	{
-		NSLog(@"Write to .plist file is a FAILURE!");
-	}
-	
+	IBbtnBack.hidden=FALSE;
+	IBbtnGetImage.hidden=FALSE;
+	if(isEdit)
+    {
+        [APP_DELEGATE.mArrSavedView replaceObjectAtIndex:iIndex withObject:self.view];
+		
+    }
+    else
+    {
+		[APP_DELEGATE.mArrSavedView addObject:self.view];
+    }
+    
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    
+    
+    NSData *myEncodedObject = [NSKeyedArchiver archivedDataWithRootObject:APP_DELEGATE.mArrSavedView];
+    [prefs setObject:myEncodedObject forKey:PREF_SAVEVIEW_ARRAY];
+    [prefs synchronize];
 	
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
@@ -248,34 +184,10 @@
 	[imgPicker OpenActionSheet:self BtniPadPopOverFrame:IBbtnGetImage];
     imgPicker.onImageSelect=^(UIImage *imgSelected,NSDictionary *dicInfo){
         //Work with Image Here
-		NSLog(@"===%@",[dicInfo objectForKey:UIImagePickerControllerReferenceURL]);
 		NSURL *referenceURL = [dicInfo objectForKey:UIImagePickerControllerReferenceURL];
 		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
 		[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
 			[self setImageInView:[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]]];
-			
-			UIImageView *img=(UIImageView *)[self.view viewWithTag:iIndexValue];
-			NSArray *arrDicValue=[self setFrameAndTransform:img];
-			
-			
-			NSDictionary *dicImageURL=[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@",[dicInfo objectForKey:UIImagePickerControllerReferenceURL]] forKey:@"source_url"];
-			
-			NSDictionary *dicValue=[NSDictionary dictionaryWithObjectsAndKeys:
-									[arrDicValue objectAtIndex:1],@"transform",
-									[arrDicValue objectAtIndex:0],@"frame",
-									dicImageURL,@"image",
-									nil];
-			
-			[mArrPlistData addObject:dicValue];
-			
-			dicValue=nil;
-			dicImageURL=nil;
-			arrDicValue=nil;
-			
-			NSLog(@"mArrPlistData===%@",mArrPlistData);
-			
-			iIndexValue++;
-			
 		} failureBlock:^(NSError *error) {
 			
 		}];
@@ -286,36 +198,6 @@
 
 
 #pragma mark - Private Methods
-
-- (CGFloat)xscale:(CGAffineTransform)transform {
-    return sqrt(transform.a * transform.a + transform.c * transform.c);
-}
-
-- (CGFloat)yscale:(CGAffineTransform)transform{
-    return sqrt(transform.b * transform.b + transform.d * transform.d);
-}
-
--(NSArray *)setFrameAndTransform:(UIImageView *)imgView
-{
-	NSDictionary *dicTransform=[NSDictionary dictionaryWithObjectsAndKeys:
-								[NSNumber numberWithFloat:imgView.transform.a],@"a",
-								[NSNumber numberWithFloat:imgView.transform.b],@"b",
-								[NSNumber numberWithFloat:imgView.transform.c],@"c",
-								[NSNumber numberWithFloat:imgView.transform.d],@"d",
-								nil];
-	
-	NSDictionary *dicFrame=[NSDictionary dictionaryWithObjectsAndKeys:
-							[NSNumber numberWithFloat:imgView.center.x],@"center_x",
-							[NSNumber numberWithFloat:imgView.center.y],@"center_y",
-							[NSNumber numberWithFloat:imgView.frame.origin.x],@"x",
-							[NSNumber numberWithFloat:imgView.frame.origin.y],@"y",
-							[NSNumber numberWithFloat:imgView.frame.size.width],@"base_width",
-							[NSNumber numberWithFloat:imgView.frame.size.height],@"base_height",
-							nil];
-	
-	
-	return [NSArray arrayWithObjects:dicFrame,dicTransform, nil];
-}
 
 -(void)setImageInView:(UIImage *)image
 {
@@ -408,17 +290,6 @@
     
 	if([(UIPinchGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
 		
-		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
-		
-		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
-		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
-		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
-		
-		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
-		
-		arrDicValue=nil;
-		mDic=nil;
-		
 		lastScale = 1.0;
 		return;
 	}
@@ -442,18 +313,6 @@
     
 	
 	if([(UIRotationGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded) {
-		
-		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
-		
-		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
-		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
-		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
-		
-		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
-		
-		arrDicValue=nil;
-		mDic=nil;
-		
 		lastRotation = 0.0;
 		return;
 	}
@@ -483,19 +342,6 @@
 		
 		firstX = [[sender view] center].x;
 		firstY = [[sender view] center].y;
-	}
-	else if([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded)
-	{
-		NSArray *arrDicValue=[self setFrameAndTransform:(UIImageView *)[sender view]];
-		
-		NSMutableDictionary *mDic=[NSMutableDictionary dictionaryWithDictionary:[mArrPlistData objectAtIndex:[sender view].tag%20000]];
-		[mDic setObject:[arrDicValue objectAtIndex:0] forKey:@"frame"];
-		[mDic setObject:[arrDicValue objectAtIndex:1] forKey:@"transform"];
-		
-		[mArrPlistData replaceObjectAtIndex:[sender view].tag%20000 withObject:mDic];
-		
-		arrDicValue=nil;
-		mDic=nil;
 	}
 	
 	translatedPoint = CGPointMake(firstX+translatedPoint.x, firstY+translatedPoint.y);
