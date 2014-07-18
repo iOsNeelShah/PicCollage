@@ -1,13 +1,14 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "1x",
       "filename" : "addtap.png"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x"
+      "idiom" : "iphone",
+      "scale" : "2x",
+      "filename" : "addtap@2x.png"
     }
   ],
   "info" : {

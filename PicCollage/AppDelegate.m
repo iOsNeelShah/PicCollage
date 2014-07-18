@@ -26,19 +26,18 @@
 	//End
 	
 	//Get View
-	
-//	//Changes
-//    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-//    NSData *myEncodedObject = [prefs objectForKey:PREF_SAVEVIEW_ARRAY];
-//    
-//    NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:10];
-//    tmpArray = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
-//    mArrSavedView = [[NSMutableArray alloc] init];
-//    if([tmpArray count]>0)
-//    {
-//        mArrSavedView = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];;
-//    }
-//    //End
+	//Changes
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    NSData *myEncodedObject = [prefs objectForKey:PREF_SAVEVIEW_ARRAY];
+    
+    NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:10];
+    tmpArray = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
+    mArrSavedView = [[NSMutableArray alloc] init];
+    if([tmpArray count]>0)
+    {
+        mArrSavedView = (NSMutableArray*)[NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];;
+    }
+    //End
 	
 	ScrollCollageViewController *scrollCollageViewController=[[ScrollCollageViewController alloc] init];
 	
