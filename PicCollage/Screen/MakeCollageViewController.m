@@ -101,6 +101,12 @@
 			{
 				
 				UIImageView *imagView=(UIImageView *)view;
+				
+				CALayer *layer1 = [imagView layer];
+				[layer1 setMasksToBounds:YES];
+				[layer1 setBorderWidth:2.0];
+				[layer1 setBorderColor:[[UIColor whiteColor] CGColor]];
+				
 				[self setGestureToImageView:imagView];
 				
 			}
@@ -186,15 +192,16 @@
 	[imgPicker OpenActionSheet:self BtniPadPopOverFrame:IBbtnGetImage];
     imgPicker.onImageSelect=^(UIImage *imgSelected,NSDictionary *dicInfo){
         //Work with Image Here
-		NSURL *referenceURL = [dicInfo objectForKey:UIImagePickerControllerReferenceURL];
-		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-		[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
-			[self setImageInView:[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]]];
-		} failureBlock:^(NSError *error) {
-			
-		}];
-		library=nil;
-		imgPicker=nil;
+		[self setImageInView:imgSelected];
+//		NSURL *referenceURL = [dicInfo objectForKey:UIImagePickerControllerReferenceURL];
+//		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+//		[library assetForURL:referenceURL resultBlock:^(ALAsset *asset) {
+//			[self setImageInView:[UIImage imageWithCGImage:[[asset defaultRepresentation] fullResolutionImage]]];
+//		} failureBlock:^(NSError *error) {
+//			
+//		}];
+//		library=nil;
+//		imgPicker=nil;
     };
 }
 
